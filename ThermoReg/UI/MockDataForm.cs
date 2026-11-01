@@ -202,14 +202,19 @@ public partial class MockDataForm : Form
                 keysActive[key.Identifier] = false;
             }
 
-            var cbWillRead = new CheckBox
+            var btSend = new Button
             {
                 Location = new Point(lbKey.Location.X + lbKey.Width + 12, lbKey.Location.Y),
                 Width = 50,
-                Checked = keysActive[key.Identifier],
+                Text = "SendData",
             };
 
-            pnKey.Controls.AddRange(lbKey, cbWillRead);
+            btSend.Click += (s, e) =>
+            {
+                SignalsReceiver.RecieveKeySignal(key.Identifier, DateTime.Now);
+            };
+
+            pnKey.Controls.AddRange(lbKey, btSend);
 
             pnKeys.Controls.Add(pnKey);
         });

@@ -7,5 +7,6 @@ namespace ThermoReg.Data
         public List<User> Users { get; set; } = [];
         public List<TemperatureSensor> Sensors { get; set; } = [];
         public List<LoRaKey> LoRaKeys { get; set; } = [];
+        public List<DesiredTemperature> DesiredTemperatures { get; set; } = [];
     }
 }
