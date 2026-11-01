@@ -1,4 +1,5 @@
 using ThermoReg.Data;
+using ThermoReg.UI;
 using ThermoReg.Utils;
 
 namespace ThermoReg
@@ -60,7 +61,8 @@ namespace ThermoReg
                 return;
             }
 
-            MessageBox.Show("Welcome");
+            Hide();
+            (new DashboardForm()).Show();
         }
     }
 }
