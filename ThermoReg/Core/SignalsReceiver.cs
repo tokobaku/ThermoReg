@@ -33,6 +33,22 @@ namespace ThermoReg.Core
             }
 
             DataBase.Data.Sensors.Add(sensor);
+            DataBase.Save();
+
+            StateUpdated?.Invoke(null, new EventArgs());
+        }
+
+        public static void RemoveSensor(string id)
+        {
+            var sensor = DataBase.Data.Sensors.Find(s => s.Identifier == id);
+
+            if (sensor == null)
+            {
+                throw new Exception($"Sensor {id} does not exist");
+            }
+
+            DataBase.Data.Sensors.Remove(sensor);
+            DataBase.Save();
 
             StateUpdated?.Invoke(null, new EventArgs());
         }
@@ -44,6 +60,8 @@ namespace ThermoReg.Core
             // todo: validate time > LastReadAt
             sensor.LastMeasuredTemperature = temp;
             sensor.LastReadAt = time;
+
+            DataBase.Save();
 
             StateUpdated?.Invoke(null, new EventArgs());
         }
@@ -74,6 +92,22 @@ namespace ThermoReg.Core
             }
 
             DataBase.Data.LoRaKeys.Add(key);
+            DataBase.Save();
+
+            StateUpdated?.Invoke(null, new EventArgs());
+        }
+
+        public static void RemoveKey(string id)
+        {
+            var key = DataBase.Data.LoRaKeys.Find(s => s.Identifier == id);
+
+            if (key == null)
+            {
+                throw new Exception($"Key {id} does not exist");
+            }
+
+            DataBase.Data.LoRaKeys.Remove(key);
+            DataBase.Save();
 
             StateUpdated?.Invoke(null, new EventArgs());
         }
@@ -82,6 +116,8 @@ namespace ThermoReg.Core
         {
             var key = DataBase.Data.LoRaKeys.Find(k => k.Identifier == identifier) ?? throw new Exception($"Key with identifier {identifier} not found");
             key.LastReadAt = datetime;
+
+            DataBase.Save();
 
             // todo datetime > LastReadAt
 

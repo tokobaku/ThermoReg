@@ -20,7 +20,7 @@ public partial class MockDataForm : Form
         gbKeys = new GroupBox
         {
             Text = "Keys",
-            AutoSize= true,
+            AutoSize = true,
         };
         Controls.AddRange(gbSensors, gbKeys);
 
@@ -120,12 +120,30 @@ public partial class MockDataForm : Form
                 Width = 50,
             };
 
+            var btDelete = new Button
+            {
+                Text = "Delete",
+                Width = 50,
+            };
+
             btRead.Click += (s, e) =>
             {
                 SignalsReceiver.ReadTemperature(sensor.Identifier, (float)nmTemperature.Value, DateTime.Now);
             };
 
-            pnSensor.Controls.AddRange(lbSensor, nmTemperature, btRead);
+            btDelete.Click += (s, e) =>
+            {
+                try
+                {
+                    SignalsReceiver.RemoveSensor(sensor.Identifier);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            };
+
+            pnSensor.Controls.AddRange(lbSensor, nmTemperature, btRead, btDelete);
 
             pnSensors.Controls.Add(pnSensor);
         });
@@ -206,7 +224,14 @@ public partial class MockDataForm : Form
             {
                 Location = new Point(lbKey.Location.X + lbKey.Width + 12, lbKey.Location.Y),
                 Width = 50,
-                Text = "SendData",
+                Text = "Send Data",
+            };
+
+            var btDelete = new Button
+            {
+                Location = new Point(btSend.Location.X + btSend.Width + 12, btSend.Location.Y),
+                Width = 50,
+                Text = "Delete",
             };
 
             btSend.Click += (s, e) =>
@@ -214,7 +239,19 @@ public partial class MockDataForm : Form
                 SignalsReceiver.RecieveKeySignal(key.Identifier, DateTime.Now);
             };
 
-            pnKey.Controls.AddRange(lbKey, btSend);
+            btDelete.Click += (s, e) =>
+            {
+                try
+                {
+                    SignalsReceiver.RemoveKey(key.Identifier);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            };
+
+            pnKey.Controls.AddRange(lbKey, btSend, btDelete);
 
             pnKeys.Controls.Add(pnKey);
         });

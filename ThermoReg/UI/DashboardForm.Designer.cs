@@ -32,14 +32,17 @@
             lvDesiredTemperatures = new ListView();
             lbAverageTemp = new Label();
             gbTempBox = new GroupBox();
-            lbDesiredTemp = new Label();
             lbTemperatureSent = new Label();
+            lbDesiredTemp = new Label();
+            btSettings = new Button();
+            lvKeys = new ListView();
+            btMock = new Button();
             gbTempBox.SuspendLayout();
             SuspendLayout();
             // 
             // lvSensors
             // 
-            lvSensors.Location = new Point(12, 167);
+            lvSensors.Location = new Point(12, 245);
             lvSensors.Name = "lvSensors";
             lvSensors.Size = new Size(121, 186);
             lvSensors.TabIndex = 1;
@@ -74,15 +77,6 @@
             gbTempBox.TabStop = false;
             gbTempBox.Text = "Temperature";
             // 
-            // lbDesiredTemp
-            // 
-            lbDesiredTemp.AutoSize = true;
-            lbDesiredTemp.Location = new Point(6, 61);
-            lbDesiredTemp.Name = "lbDesiredTemp";
-            lbDesiredTemp.Size = new Size(122, 15);
-            lbDesiredTemp.TabIndex = 4;
-            lbDesiredTemp.Text = "Desired Temperature: ";
-            // 
             // lbTemperatureSent
             // 
             lbTemperatureSent.AutoSize = true;
@@ -92,11 +86,51 @@
             lbTemperatureSent.TabIndex = 5;
             lbTemperatureSent.Text = "Temperature sent: ";
             // 
+            // lbDesiredTemp
+            // 
+            lbDesiredTemp.AutoSize = true;
+            lbDesiredTemp.Location = new Point(6, 61);
+            lbDesiredTemp.Name = "lbDesiredTemp";
+            lbDesiredTemp.Size = new Size(122, 15);
+            lbDesiredTemp.TabIndex = 4;
+            lbDesiredTemp.Text = "Desired Temperature: ";
+            // 
+            // btSettings
+            // 
+            btSettings.Location = new Point(1041, 12);
+            btSettings.Name = "btSettings";
+            btSettings.Size = new Size(75, 23);
+            btSettings.TabIndex = 5;
+            btSettings.Text = "Settings";
+            btSettings.UseVisualStyleBackColor = true;
+            btSettings.Click += btSettings_Click;
+            // 
+            // lvKeys
+            // 
+            lvKeys.Location = new Point(468, 245);
+            lvKeys.Name = "lvKeys";
+            lvKeys.Size = new Size(121, 97);
+            lvKeys.TabIndex = 6;
+            lvKeys.UseCompatibleStateImageBehavior = false;
+            // 
+            // btMock
+            // 
+            btMock.Location = new Point(960, 12);
+            btMock.Name = "btMock";
+            btMock.Size = new Size(75, 23);
+            btMock.TabIndex = 7;
+            btMock.Text = "Mock";
+            btMock.UseVisualStyleBackColor = true;
+            btMock.Click += btMock_Click;
+            // 
             // DashboardForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1128, 654);
+            Controls.Add(btMock);
+            Controls.Add(lvKeys);
+            Controls.Add(btSettings);
             Controls.Add(gbTempBox);
             Controls.Add(lvDesiredTemperatures);
             Controls.Add(lvSensors);
@@ -116,5 +150,8 @@
         private GroupBox gbTempBox;
         private Label lbDesiredTemp;
         private Label lbTemperatureSent;
+        private Button btSettings;
+        private ListView lvKeys;
+        private Button btMock;
     }
 }

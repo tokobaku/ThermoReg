@@ -8,5 +8,6 @@ namespace ThermoReg.Data
         public List<TemperatureSensor> Sensors { get; set; } = [];
         public List<LoRaKey> LoRaKeys { get; set; } = [];
         public List<DesiredTemperature> DesiredTemperatures { get; set; } = [];
+        public Configuration Configuration { get; set; } = new();
     }
 }

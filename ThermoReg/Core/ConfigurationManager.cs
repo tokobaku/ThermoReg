@@ -4,7 +4,7 @@ using ThermoReg.Utils;
 
 namespace ThermoReg.Core
 {
-    internal static class Configuration
+    internal static class ConfigurationManager
     {
         public static event EventHandler? ConfigUpdated;
 
@@ -30,13 +30,34 @@ namespace ThermoReg.Core
                 throw new Exception($"This overlaps with temperature range {overlapping.StartHour:D2}:{overlapping.StartMinute:D2} - {overlapping.EndHour:D2}:{overlapping.EndMinute:D2}");
             }
 
-            if (dt.Temperature >= 30)
+            if (dt.Temperature >= DataBase.Data.Configuration.MaxAllowedRoomTemp)
             {
-                // todo: move 30 to constant
                 throw new Exception("Temperature too high");
             }
 
             DataBase.Data.DesiredTemperatures.Add(dt);
+            DataBase.Save();
+            ConfigUpdated?.Invoke(null, new EventArgs());
+        }
+
+        public static void RemoveDesiredTemperature(string tag)
+        {
+            var desiredTemp = DataBase.Data.DesiredTemperatures.Find(dt => dt.GetTag() == tag);
+
+            if (desiredTemp != null)
+            {
+                DataBase.Data.DesiredTemperatures.Remove(desiredTemp);
+            }
+
+            DataBase.Save();
+
+            ConfigUpdated?.Invoke(null, new EventArgs());
+        }
+
+        public static void UpdateConfiguration(Configuration config)
+        {
+            DataBase.Data.Configuration = config;
+            DataBase.Save();
             ConfigUpdated?.Invoke(null, new EventArgs());
         }
     }

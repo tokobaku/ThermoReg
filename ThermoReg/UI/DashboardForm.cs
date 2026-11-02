@@ -9,7 +9,7 @@ namespace ThermoReg.UI
         {
             InitializeComponent();
 
-            lvDesiredTemperatures.Width = 90 + 90 + 90;
+            lvDesiredTemperatures.Width = 90 + 90 + 90 + 50;
             lvDesiredTemperatures.Columns.Add("Start time", 90);
             lvDesiredTemperatures.Columns.Add("End time", 90);
             lvDesiredTemperatures.Columns.Add("Temperature", 90);
@@ -48,12 +48,17 @@ namespace ThermoReg.UI
                 Text = "Add",
                 Location = new Point(nmTemperature.Location.X, nmTemperature.Location.Y + nmTemperature.Height + 12),
             };
+            var btRemove = new Button
+            {
+                Text = "Remove",
+                Location = new Point(btAddDesiredTemperature.Location.X, btAddDesiredTemperature.Location.Y + btAddDesiredTemperature.Height + 12),
+            };
 
             btAddDesiredTemperature.Click += (s, e) =>
             {
                 try
                 {
-                    Configuration.AddNewDesiredTemperature(new Data.Model.DesiredTemperature
+                    ConfigurationManager.AddNewDesiredTemperature(new Data.Model.DesiredTemperature
                     {
                         StartHour = dtpStartTime.Value.Hour,
                         StartMinute = dtpStartTime.Value.Minute,
@@ -69,7 +74,20 @@ namespace ThermoReg.UI
                 }
             };
 
-            Controls.AddRange(dtpStartTime, dtpEndTime, nmTemperature, btAddDesiredTemperature);
+            btRemove.Click += (s, e) =>
+            {
+                foreach (ListViewItem desiredTemp in lvDesiredTemperatures.SelectedItems)
+                {
+                    var tag = desiredTemp.Tag;
+
+                    if (tag != null)
+                    {
+                        ConfigurationManager.RemoveDesiredTemperature((string)tag);
+                    }
+                }
+            };
+
+            Controls.AddRange(dtpStartTime, dtpEndTime, nmTemperature, btAddDesiredTemperature, btRemove);
 
             lvSensors.Width = 100 + 120 + 90 + 140;
             lvSensors.Columns.Add("Identifier", 100);
@@ -80,7 +98,19 @@ namespace ThermoReg.UI
             lvSensors.FullRowSelect = true;
             lvSensors.GridLines = true;
 
-            gbTempBox.Location = new Point(Width - gbTempBox.Width - 24, 12);
+            btSettings.AutoSize = true;
+            btSettings.Location = new Point(Width - btSettings.Width - 24, 12);
+
+            gbTempBox.Location = new Point(Width - gbTempBox.Width - 24, btSettings.Location.Y + btSettings.Height + 12);
+
+            lvKeys.Width = 90 + 90 + 90 + 90;
+            lvKeys.Columns.Add("Key ID", 90);
+            lvKeys.Columns.Add("Key Name", 90);
+            lvKeys.Columns.Add("Last read", 90);
+            lvKeys.Columns.Add("Active", 90);
+            lvKeys.View = View.Details;
+            lvKeys.FullRowSelect = true;
+            lvKeys.GridLines = true;
 
             var form = new MockDataForm();
             form.Show();
@@ -93,7 +123,7 @@ namespace ThermoReg.UI
             {
                 CalculateLayout();
             };
-            Configuration.ConfigUpdated += (s, e) =>
+            ConfigurationManager.ConfigUpdated += (s, e) =>
             {
                 CalculateLayout();
             };
@@ -130,6 +160,7 @@ namespace ThermoReg.UI
                 item.SubItems.Add($"{desiredTemp.EndHour:D2}:{desiredTemp.EndMinute:D2}");
 
                 item.SubItems.Add(desiredTemp.Temperature.ToString());
+                item.Tag = desiredTemp.GetTag();
 
                 lvDesiredTemperatures.Items.Add(item);
             });
@@ -140,24 +171,47 @@ namespace ThermoReg.UI
 
             lbAverageTemp.Text = $"Average temperature: {averageTemp}";
 
-            var TemperatureController = new TemperatureController();
-
             var desiredTemp = TemperatureController.CalculateDesiredTemperature();
             lbDesiredTemp.Text = $"Desired temperature: {desiredTemp}";
 
             var sentTemp = TemperatureController.CaluclateTemperatureSentToBoiler(averageTemp ?? 15, desiredTemp);
 
             lbTemperatureSent.Text = $"Sent temperature: {sentTemp}";
-        }
 
-        private void BtDecrease_Click(object? sender, EventArgs e)
-        {
-            throw new NotImplementedException();
+            lvKeys.Location = new Point(lvSensors.Location.X + lvSensors.Width + 12, lvSensors.Location.Y);
+
+            lvKeys.Items.Clear();
+            DataBase.Data.LoRaKeys.ForEach(key =>
+            {
+                var item = new ListViewItem(key.Identifier);
+                item.SubItems.Add(key.Name);
+                item.SubItems.Add(key.LastReadAt?.ToString() ?? "Never read");
+ 
+                if (key.LastReadAt is not null)
+                {
+                    item.SubItems.Add((DateTime.Now - key.LastReadAt) <= DataBase.Data.Configuration.MinEmptyTime ? "Active" : "Inactive");
+                } else
+                {
+                    item.SubItems.Add("Inactive");
+                }
+
+                lvKeys.Items.Add(item);
+            });
         }
 
         private void DashboardForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
+        }
+
+        private void btSettings_Click(object sender, EventArgs e)
+        {
+            (new ConfigurationForm()).ShowDialog();
+        }
+
+        private void btMock_Click(object sender, EventArgs e)
+        {
+            (new MockDataForm()).Show();
         }
     }
 }

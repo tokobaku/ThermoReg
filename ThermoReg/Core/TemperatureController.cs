@@ -3,9 +3,9 @@ using ThermoReg.Utils;
 
 namespace ThermoReg.Core
 {
-    internal class TemperatureController
+    internal static class TemperatureController
     {
-        public float CalculateDesiredTemperature()
+        public static float CalculateDesiredTemperature()
         {
             var now = DateTime.Now;
             var smallestSpan = now - DateTime.UnixEpoch;
@@ -23,15 +23,13 @@ namespace ThermoReg.Core
                 }
             });
 
-            // todo: make this configurable
-            if (smallestSpan > TimeSpan.Parse("00:10:00"))
+            if (smallestSpan > DataBase.Data.Configuration.MinEmptyTime)
             {
-                // todo: default min temp to be configurable
-                return 15f;
+                return DataBase.Data.Configuration.EmptyTemp;
             }
 
             var activeDesiredTemperature = DataBase.Data.DesiredTemperatures.Find(dt => Time.IsTimeBetween(
-                new TimeSpan(now.Hour, now.Minute, 0), 
+                new TimeSpan(now.Hour, now.Minute, 0),
                 new TimeSpan(dt.StartHour, dt.StartMinute, 0),
                 new TimeSpan(dt.EndHour, dt.EndMinute, 0))
             );
@@ -41,15 +39,14 @@ namespace ThermoReg.Core
                 return activeDesiredTemperature.Temperature;
             }
 
-            // todo: use configued value
-            return 15f;
+            return DataBase.Data.Configuration.EmptyTemp;
         }
 
-        public float CaluclateTemperatureSentToBoiler(float roomTemperature, float desiredTemperature)
+        public static float CaluclateTemperatureSentToBoiler(float roomTemperature, float desiredTemperature)
         {
-            const float minTemp = 40.0f;
-            const float maxTemp = 65.0f;
-            const float proportionalBand = 2.5f;
+            float minTemp = DataBase.Data.Configuration.MinWaterTemp;
+            float maxTemp = DataBase.Data.Configuration.MaxWaterTemp;
+            float proportionalBand = DataBase.Data.Configuration.ProportionalBand;
 
             float diff = desiredTemperature - roomTemperature;
 
